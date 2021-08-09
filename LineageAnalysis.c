@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-/* For Nozoe function */
 #include <dirent.h>
 #include <sys/stat.h>
 
@@ -20,7 +19,6 @@ void ExportGammaLineageData_PreRun(double k, double theta, FILE *fout,
 void ExportGammaLineageData(double k, double theta, FILE *fout,
 			    double currTime, double maxTime,
 			    int divCount);
-//void EffectOfDeath_GammaIDTDist(void);
 void EffectOfRemoval(int index);
 void GammaIDTDistributionWithDeath(double epsilon, double k,
 				   double *popFit,
@@ -48,14 +46,11 @@ double xPositionReturn(double *delcum, double checkValue);
 void plot_legendre(void);
 void plot_legendre_gzi(void);
 void plot_cumulant_gzi(void);
-//void GziStatistics(void);
 void GziStatistics(int index);
 void ExportGammaLineageData_counter(double k, double theta, long *counter,
 				    double currTime, double maxTime);
-//void GammaIDTDistributionForSmallTreeSet(double k, long treeNum, long repeatNum);
 void GammaIDTDistributionForSmallTreeSet(double k, long treeNum, long repeatNum, double popFit);
 void GammaTransitionForSmallTreeSet(double k, long treeNum, long repeatNum, double popFit);
-//void plot_deviationProb(void);
 void plot_deviationProb(long treeNum);
 void GammaTransitionWithRemoval_ForSmallTreeTest(double k, double *popFit,
 						 double *chronoFit, double *retroFit);
@@ -70,14 +65,8 @@ int main(){
 
   while(loopindex == 0){
     printf("<LINEAGE ANALYSIS>\n");
-    //printf("1: Gamma IDT distribution\n");
     printf("1: Gamma IDT distribution\n");
     printf("2: Correlated gamma distrbution\n");
-    //printf("<FUNDAMENTAL FUNCTION>\n");
-    //printf("4: Fundamental function for gamma IDT distributions\n");
-    //printf("5: gzi-statistics (without mother-daughter correlation)\n");
-    //printf("6: gzi-statistics (with mother-daughter correlation)\n");
-    //printf("3: ANALYSIS NAME 3\n");
     printf("0: Exit\n");
     InputNonNegativeIntValue(&choice, "Enter number");
     switch(choice){
@@ -226,16 +215,13 @@ void GziStatistics(int index) //index = 0: gamma; index = 1: gamma transition
 
   //Plot the distributions etc.
   plot_linespoints(fname_fcl, "lp pt 6", "Division count", "Probability", 0, 0, 1, 3);
-  //plot_linespoints(fname_out, "l", "s", "K(s)", 0, 0, 1, 1);
   plot_cumulant_gzi();
   plot_delcum_gzi();
   plot_legendre_gzi();
 
   //Insert functions to show the deviations of population growth rate
-  //GammaIDTDistributionForSmallTreeSet(k, 10, 1000, popFit); //Show
   InputPositiveLongValue(&treeNum, "Enter number of initial cells (tentative: 10)");
   InputPositiveLongValue(&counter, "Enter repeat cycle (tentative: 10000)");
-  //GammaIDTDistributionForSmallTreeSet(k, 100, 10000, popFit); //Show
   if(index == 0){
     GammaIDTDistributionForSmallTreeSet(k, treeNum, counter, popFit);
   }else{
@@ -245,7 +231,7 @@ void GziStatistics(int index) //index = 0: gamma; index = 1: gamma transition
   plot_deviationProb(treeNum);  
 }
 
-//void plot_deviationProb(void)
+
 void plot_deviationProb(long treeNum)
 {
   char fname_out[] = "CGF.dat";
@@ -264,6 +250,7 @@ void plot_deviationProb(long treeNum)
   gpclose(gp);
 }
 
+
 void plot_cumulant_gzi(void)
 {
   char fname_out[] = "CGF.dat";
@@ -280,6 +267,7 @@ void plot_cumulant_gzi(void)
   gpclose(gp);
 }
 
+
 void CalculatingCumulantGeneratingFunction(void)
 {
   long i, j;
@@ -294,10 +282,6 @@ void CalculatingCumulantGeneratingFunction(void)
   double pcl[100];
   double cum[301];
   double delcum[301];
-  //double epsilon;
-  //double noDeathPopFit;
-  //double noDeathRetroFit;
-  //double noDeathChronoFit;
   double k;
   double value;
   double maxTime = 8.0;
@@ -310,9 +294,7 @@ void CalculatingCumulantGeneratingFunction(void)
   printf("<h(D)>_{rs}/tau = %lf\n", retroFit);
 
   //Calculating Pcl
-  //counter = FileLineNumberReturn(fname);
   ColumnInitialize_double(pcl, 100);
-  //counter = 0;
   fin = fopen(fname, "r");
   while(fscanf(fin, "%ld", &divNum) != EOF){
     if(divNum < 100){
@@ -320,7 +302,6 @@ void CalculatingCumulantGeneratingFunction(void)
     }else{
       pcl[99] = pcl[99] + pow(2.0, -divNum);
     }
-    //counter = counter + 1;
   }
   fclose(fin);
 
@@ -331,26 +312,17 @@ void CalculatingCumulantGeneratingFunction(void)
   }
   fclose(fout);
 
-  //fout = fopen(fname_out, "w");
-  //for(i=0; i<=200; i++){
   for(i=0; i<=300; i++){
     value = 0.0;
     for(j=0; j<100; j++){
       value = value + pow(2.0, ((i*0.01)-1.0)*j)*pcl[j];
-      //value = value + pow(2.0, (i*0.01)*j)*pcl[j];
     }
-    //fprintf(fout, "%lf\t%lf\n", i*0.01, log(value));
     cum[i] = log(value);
-    //fprintf(fout, "%lf\t%lf\n", i*0.01-1.0, log(value));
-    //fprintf(fout, "%lf\t%lf\n", i*0.01-1.0, cum[i]);
   }
-  //fclose(fout);
 
   fout = fopen(fname_out, "w");
   for(i=1; i<300; i++){
     delcum[i] = (cum[i+1]-cum[i-1])/0.02;
-    //delcum[i] = (cum[i+1]-cum[i-1])/0.02/maxTime; //To evaluate the values as rates
-    //fprintf(fout, "%lf\t%lf\t%lf\n", i*0.01-1.0, cum[i], delcum[i]/maxTime);
     fprintf(fout, "%lf\t%lf\t%lf\t%lf\n", i*0.01-1.0, cum[i], delcum[i]/maxTime,
 	    (i*0.01-1.0)*delcum[i]-cum[i]);
   }
@@ -367,6 +339,7 @@ void CalculatingCumulantGeneratingFunction(void)
   plot_delcum();
   plot_legendre();
 }
+
 
 double xPositionReturn(double *delcum, double checkValue)
 {
@@ -388,6 +361,7 @@ double xPositionReturn(double *delcum, double checkValue)
 
 }
 
+
 void plot_delcum(void)
 {
   char fname_out[] = "CGF.dat";
@@ -402,6 +376,7 @@ void plot_delcum(void)
   eps_output(gp, fname_export);
   gpclose(gp);
 }
+
 
 void plot_delcum_gzi(void)
 {
@@ -419,6 +394,7 @@ void plot_delcum_gzi(void)
   eps_output(gp, fname_export);
   gpclose(gp);
 }
+
 
 void plot_legendre(void)
 {
@@ -453,7 +429,7 @@ void plot_legendre_gzi(void)
   gpclose(gp);
 }
 
-//void EffectOfDeath_GammaIDTDist(void)
+
 void EffectOfRemoval(int index)
 {
   int i;
@@ -482,8 +458,6 @@ void EffectOfRemoval(int index)
       noDeathRetroFit = retroFit;
       noDeathChronoFit = chronoFit;
     }
-    //fprintf(fout, "%lf\t%lf\t%lf\t%lf\t%lf\n",
-    //	    epsilon, popFit, chronoFit, retroFit, popFit-noDeathPopFit);
     fprintf(fout, "%lf\t%lf\t%lf\t%lf\t%lf\n",
     	    epsilon, popFit, chronoFit, retroFit, (popFit-noDeathPopFit)/noDeathPopFit);
   }
@@ -494,9 +468,7 @@ void EffectOfRemoval(int index)
   gpStandardFormat(gp);
   gpLabels(gp, "epsilon", "Delta Lambda / Lambda");
   fprintf(gp, "set size ratio 1\n");
-  //fprintf(gp, "f(x) = -%lf*x\n", noDeathRetroFit);
   fprintf(gp, "f(x, k) = -k*x\n");
-  //fprintf(gp, "plot f(x) w l lt 1 lc rgb 'gray' notitle\n");
   fprintf(gp, "plot f(x, %lf) w l lt 1 lc rgb 'red' ti 'Retrospective'\n", noDeathRetroFit/noDeathPopFit);
   fprintf(gp, "replot f(x, %lf) w l lt 1 lc rgb 'blue' ti 'Population'\n", noDeathPopFit/noDeathPopFit);
   fprintf(gp, "replot f(x, %lf) w l lt 1 lc rgb 'green' ti 'Chronological'\n", noDeathChronoFit/noDeathPopFit);
@@ -511,7 +483,6 @@ void GammaIDTDistributionForSmallTreeSet(double k, long treeNum, long repeatNum,
   long i, j;
   double theta;
   double maxTime = 8.0;
-  //double popFit, chronoFit, retroFit;
   char fname_out[] = "InitialLineageData.dat";
   char fname_result[] = "PopFitList.dat";
   double *initialDivisionTimeList;
@@ -519,7 +490,6 @@ void GammaIDTDistributionForSmallTreeSet(double k, long treeNum, long repeatNum,
   long pos;
   double *popFitList;
   FILE *fout;
-  //int *divCountList;
   int divCount;
 
   theta = pow(2.0, 1.0/k)-1.0;
@@ -551,7 +521,6 @@ void GammaIDTDistributionForSmallTreeSet(double k, long treeNum, long repeatNum,
   }
   fclose(fout);
 
-  //fout = fopen(fname_result, "w");
   for(i=0; i<repeatNum; i++){
     endCounter = 0;
     for(j=0; j<treeNum; j++){
@@ -561,22 +530,16 @@ void GammaIDTDistributionForSmallTreeSet(double k, long treeNum, long repeatNum,
 				     maxTime);
     }
     popFitList[i] = 1.0/maxTime*log(((double)endCounter)/((double)treeNum));
-    //printf("%lf\n", popFitList[i]);
-    //fprintf(fout, "%lf\n", 1.0/maxTime*log(((double)endCounter)/((double)treeNum)));
     if((i+1)%100 == 0) printf("%ld cycle finished\n", i+1);
   }
-  //fclose(fout);
 
   fout = fopen(fname_result, "w");
-  //for(i=0; i<=15; i++){
   for(i=0; i<=1000; i++){
     counter = 0;
     for(j=0; j<repeatNum; j++){
-      //if(popFitList[j]>=(popFit+i*0.1)) counter = counter + 1;
       if(popFitList[j]>=(popFit+i*0.01)) counter = counter + 1;
     }
     if(counter > 0){
-      //fprintf(fout, "%lf\t%lf\n", popFit+i*0.1, log(((double)counter)/((double)repeatNum))/treeNum);
       fprintf(fout, "%lf\t%lf\n", popFit+i*0.01, log(((double)counter)/((double)repeatNum))/treeNum);
     }
   }
@@ -591,7 +554,6 @@ void GammaTransitionForSmallTreeSet(double k, long treeNum, long repeatNum, doub
   long i, j;
   double theta;
   double maxTime = 8.0;
-  //double popFit, chronoFit, retroFit;
   char fname_out[] = "InitialLineageData.dat";
   char fname_result[] = "PopFitList.dat";
   double *initialDivisionTimeList;
@@ -600,7 +562,6 @@ void GammaTransitionForSmallTreeSet(double k, long treeNum, long repeatNum, doub
   long pos;
   double *popFitList;
   FILE *fout;
-  //int *divCountList;
   int divCount;
 
   theta = pow(2.0, 1.0/k)-1.0;
@@ -609,15 +570,6 @@ void GammaTransitionForSmallTreeSet(double k, long treeNum, long repeatNum, doub
     printf("popFitList pointer couldn't be assigned!\n");
     exit(1);
   }
-
-  //Pre-run to get the information of initial division time
-  //printf("Pre-run is ongoing...\n");
-  //fout = fopen(fname_out, "w");
-  //for(i=0; i<1000; i++){
-  //  ExportGammaLineageData_WithDeath_PreRun(k, theta, fout, 0.0, maxTime, 0.0);
-  //}
-  //fclose(fout);
-  //counter = FileLineNumberReturn(fname_out);
 
   counter = FileLineNumberReturn(fname_out);
 
@@ -635,36 +587,27 @@ void GammaTransitionForSmallTreeSet(double k, long treeNum, long repeatNum, doub
   }
   fclose(fout);
 
-  //fout = fopen(fname_result, "w");
   for(i=0; i<repeatNum; i++){
     endCounter = 0;
     for(j=0; j<treeNum; j++){
       pos = (long)(genrand_real3()*counter);
       if(pos == counter) pos = counter -1;
 
-      //	ExportGammaLineageData_counter(k, theta, &endCounter, initialDivisionTimeList[pos],
-      //			       maxTime);
-
       ExportGammaTransitionData_counter(k, theta, &endCounter, initialDivisionTimeList[pos],
 					maxTime, initialIDTList[pos]);
 
     }
     popFitList[i] = 1.0/maxTime*log(((double)endCounter)/((double)treeNum));
-    //printf("%lf\n", popFitList[i]);
-    //fprintf(fout, "%lf\n", 1.0/maxTime*log(((double)endCounter)/((double)treeNum)));
     if((i+1)%100 == 0) printf("%ld cycle finished\n", i+1);
   }
-  //fclose(fout);
 
   fout = fopen(fname_result, "w");
   for(i=0; i<=1000; i++){
     counter = 0;
     for(j=0; j<repeatNum; j++){
-      //if(popFitList[j]>=(popFit+i*0.1)) counter = counter + 1;
       if(popFitList[j]>=(popFit+i*0.01)) counter = counter + 1;
     }
     if(counter > 0){
-      //fprintf(fout, "%lf\t%lf\n", popFit+i*0.1, log(((double)counter)/((double)repeatNum))/treeNum);
       fprintf(fout, "%lf\t%lf\n", popFit+i*0.01, log(((double)counter)/((double)repeatNum))/treeNum);
     }
   }
@@ -684,29 +627,14 @@ void GammaIDTDistributionWithDeath(double epsilon, double k,
   long i;
   FILE *fout;
   char fname_out[] = "LineageData.dat";
-  //double k, theta;
   double theta;
-  //double currTime;
-  double maxTime = 8.0; // duration of 7 mean generation time
+  double maxTime = 8.0; // duration of 8 mean generation time
   double *initialDivisionTimeList;
-  //double epsilon;
   long counter;
   long pos;
-  //int *divCountList;
   int divCount;
-  //double chronoFitness, retroFitness;
 
-  //InputPositiveDoubleValue(&k, "Enter shape parameter");
-  //theta = pow(2.0, 1.0/k - 1.0);
   theta = pow(2.0, 1.0/k)-1.0;
-  //printf("\n<Simulation conditions>\n");
-  //printf("Shape parameter: %lf\n", k);
-  //printf("Scale parameter: %lf\n", theta);
-  //printf("Mean chronological fitness: %lf\n", log(2.0)/(k*theta));
-  //printf("Predicted population growth rate: %lf\n",
-  //	 (pow(2.0, 1.0/k) - 1.0)/theta);
-  //printf("Predicted mean retrospective fitness: %lf\n",
-  //	 pow(2.0, 1.0/k)*log(2.0)/k/theta);
 
   //Pre-run to get the information of initial division time
   fout = fopen(fname_out, "w");
@@ -748,12 +676,6 @@ void GammaIDTDistributionWithDeath(double epsilon, double k,
 	 1.0/maxTime*log(((double)counter)/((double)treeNum)));
   (*popFit) = 1.0/maxTime*log(((double)counter)/((double)treeNum));
 
-  //divCountList = (int *)malloc(sizeof(int)*counter);
-  //if(divCountList == NULL){
-  //  printf("divCountList pointer couldn't be assigned!\n");
-  //  exit(1);
-  //}
-
   (*chronoFit) = 0.0;
   (*retroFit) = 0.0;
   fout = fopen(fname_out, "r");
@@ -766,10 +688,6 @@ void GammaIDTDistributionWithDeath(double epsilon, double k,
 
   (*chronoFit) = (*chronoFit)/maxTime;
   (*retroFit) = (*retroFit)/maxTime;
-  //printf("Chronological mean fitness: %lf\n", chronoFitness/maxTime);
-  //printf("Retrospective mean fitness: %lf\n", retroFitness/maxTime);
-  
-  //free(divCountList);
 
 }
 
@@ -781,34 +699,18 @@ void GammaTransitionWithRemoval(double epsilon, double k,
   long i;
   FILE *fout;
   char fname_out[] = "LineageData.dat";
-  //double k, theta;
   double theta;
-  //double currTime;
-  double maxTime = 8.0; // duration of 7 mean generation time
+  double maxTime = 8.0; // duration of 8 mean generation time
   double *initialDivisionTimeList, *initialIDT;
-  //double epsilon;
   long counter;
   long pos;
-  //int *divCountList;
   int divCount;
-  //double chronoFitness, retroFitness;
 
-  //InputPositiveDoubleValue(&k, "Enter shape parameter");
-  //theta = pow(2.0, 1.0/k - 1.0);
   theta = pow(2.0, 1.0/k)-1.0;
-  //printf("\n<Simulation conditions>\n");
-  //printf("Shape parameter: %lf\n", k);
-  //printf("Scale parameter: %lf\n", theta);
-  //printf("Mean chronological fitness: %lf\n", log(2.0)/(k*theta));
-  //printf("Predicted population growth rate: %lf\n",
-  //	 (pow(2.0, 1.0/k) - 1.0)/theta);
-  //printf("Predicted mean retrospective fitness: %lf\n",
-  //	 pow(2.0, 1.0/k)*log(2.0)/k/theta);
 
   //Pre-run to get the information of initial division time
   fout = fopen(fname_out, "w");
   for(i=0; i<treeNum; i++){
-    //ExportGammaLineageData_WithDeath_PreRun(k, theta, fout, 0.0, maxTime, epsilon);
     ExportGammaTransitionData_WithDeath_PreRun(k, theta, fout, 0.0, maxTime, epsilon, gamma_rand(k, theta));
   }
   fclose(fout);
@@ -834,8 +736,6 @@ void GammaTransitionWithRemoval(double epsilon, double k,
   for(i=0; i<treeNum; i++){
     pos = (long)(genrand_real3()*counter);
     if(pos == counter) pos = counter - 1;
-    //    ExportGammaLineageData_WithDeath(k, theta, fout, initialDivisionTimeList[pos],
-    //				     maxTime, 0, epsilon);
     ExportGammaTransitionData_WithDeath(k, theta, fout, initialDivisionTimeList[pos],
 					maxTime, 0, epsilon, initialIDT[pos]);
   }
@@ -850,12 +750,6 @@ void GammaTransitionWithRemoval(double epsilon, double k,
 	 1.0/maxTime*log(((double)counter)/((double)treeNum)));
   (*popFit) = 1.0/maxTime*log(((double)counter)/((double)treeNum));
 
-  //divCountList = (int *)malloc(sizeof(int)*counter);
-  //if(divCountList == NULL){
-  //  printf("divCountList pointer couldn't be assigned!\n");
-  //  exit(1);
-  //}
-
   (*chronoFit) = 0.0;
   (*retroFit) = 0.0;
   fout = fopen(fname_out, "r");
@@ -868,10 +762,6 @@ void GammaTransitionWithRemoval(double epsilon, double k,
 
   (*chronoFit) = (*chronoFit)/maxTime;
   (*retroFit) = (*retroFit)/maxTime;
-  //printf("Chronological mean fitness: %lf\n", chronoFitness/maxTime);
-  //printf("Retrospective mean fitness: %lf\n", retroFitness/maxTime);
-  
-  //free(divCountList);
 
 }
 
@@ -883,34 +773,18 @@ void GammaTransitionWithRemoval_ForSmallTreeTest(double k, double *popFit,
   FILE *fout;
   char fname_prerun[] = "InitialLineageData.dat";
   char fname_out[] = "LineageData.dat";
-  //double k, theta;
   double theta;
-  //double currTime;
-  double maxTime = 8.0; // duration of 7 mean generation time
+  double maxTime = 8.0; // duration of 8 mean generation time
   double *initialDivisionTimeList, *initialIDT;
-  //double epsilon;
   long counter;
   long pos;
-  //int *divCountList;
   int divCount;
-  //double chronoFitness, retroFitness;
 
-  //InputPositiveDoubleValue(&k, "Enter shape parameter");
-  //theta = pow(2.0, 1.0/k - 1.0);
   theta = pow(2.0, 1.0/k)-1.0;
-  //printf("\n<Simulation conditions>\n");
-  //printf("Shape parameter: %lf\n", k);
-  //printf("Scale parameter: %lf\n", theta);
-  //printf("Mean chronological fitness: %lf\n", log(2.0)/(k*theta));
-  //printf("Predicted population growth rate: %lf\n",
-  //	 (pow(2.0, 1.0/k) - 1.0)/theta);
-  //printf("Predicted mean retrospective fitness: %lf\n",
-  //	 pow(2.0, 1.0/k)*log(2.0)/k/theta);
 
   //Pre-run to get the information of initial division time
   fout = fopen(fname_prerun, "w");
   for(i=0; i<treeNum; i++){
-    //ExportGammaLineageData_WithDeath_PreRun(k, theta, fout, 0.0, maxTime, epsilon);
     ExportGammaTransitionData_WithDeath_PreRun(k, theta, fout, 0.0, maxTime, 0.0, gamma_rand(k, theta));
   }
   fclose(fout);
@@ -936,8 +810,6 @@ void GammaTransitionWithRemoval_ForSmallTreeTest(double k, double *popFit,
   for(i=0; i<treeNum; i++){
     pos = (long)(genrand_real3()*counter);
     if(pos == counter) pos = counter - 1;
-    //    ExportGammaLineageData_WithDeath(k, theta, fout, initialDivisionTimeList[pos],
-    //				     maxTime, 0, epsilon);
     ExportGammaTransitionData_WithDeath(k, theta, fout, initialDivisionTimeList[pos],
 					maxTime, 0, 0.0, initialIDT[pos]);
   }
@@ -952,12 +824,6 @@ void GammaTransitionWithRemoval_ForSmallTreeTest(double k, double *popFit,
 	 1.0/maxTime*log(((double)counter)/((double)treeNum)));
   (*popFit) = 1.0/maxTime*log(((double)counter)/((double)treeNum));
 
-  //divCountList = (int *)malloc(sizeof(int)*counter);
-  //if(divCountList == NULL){
-  //  printf("divCountList pointer couldn't be assigned!\n");
-  //  exit(1);
-  //}
-
   (*chronoFit) = 0.0;
   (*retroFit) = 0.0;
   fout = fopen(fname_out, "r");
@@ -970,10 +836,6 @@ void GammaTransitionWithRemoval_ForSmallTreeTest(double k, double *popFit,
 
   (*chronoFit) = (*chronoFit)/maxTime;
   (*retroFit) = (*retroFit)/maxTime;
-  //printf("Chronological mean fitness: %lf\n", chronoFitness/maxTime);
-  //printf("Retrospective mean fitness: %lf\n", retroFitness/maxTime);
-  
-  //free(divCountList);
 
 }
 
@@ -985,17 +847,14 @@ void GammaIDTDistribution(void)
   FILE *fout;
   char fname_out[] = "LineageData.dat";
   double k, theta;
-  //double currTime;
-  double maxTime = 8.0; // duration of 7 mean generation time
+  double maxTime = 8.0; // duration of 8 mean generation time
   double *initialDivisionTimeList;
   long counter;
   long pos;
-  //int *divCountList;
   int divCount;
   double chronoFitness, retroFitness;
 
   InputPositiveDoubleValue(&k, "Enter shape parameter");
-  //theta = pow(2.0, 1.0/k - 1.0);
   theta = pow(2.0, 1.0/k)-1.0;
   printf("\n<Simulation conditions>\n");
   printf("Shape parameter: %lf\n", k);
@@ -1043,12 +902,6 @@ void GammaIDTDistribution(void)
   printf("Calculated population growth rate: %lf\n",
 	 1.0/maxTime*log(((double)counter)/((double)treeNum)));
 
-  //divCountList = (int *)malloc(sizeof(int)*counter);
-  //if(divCountList == NULL){
-  //  printf("divCountList pointer couldn't be assigned!\n");
-  //  exit(1);
-  //}
-
   chronoFitness = 0.0;
   retroFitness = 0.0;
   fout = fopen(fname_out, "r");
@@ -1061,10 +914,7 @@ void GammaIDTDistribution(void)
 
   printf("Chronological mean fitness: %lf\n", chronoFitness/maxTime);
   printf("Retrospective mean fitness: %lf\n", retroFitness/maxTime);
-  
-  //free(divCountList);
 
-  
 }
 
 void ExportGammaLineageData_PreRun(double k, double theta, FILE *fout,
@@ -1106,10 +956,8 @@ void ExportGammaTransitionData_WithDeath_PreRun(double k, double theta, FILE *fo
 						double epsilon, double prevIDT)
 {
   double idt;
-  //double acorr = 0.3; //for check
 
   if(genrand_real3()<=pow(2.0, -epsilon)){ //Survived
-    //idt = gamma_rand(k, theta);
     idt = NextValueGamma(k, theta, acorr, prevIDT);
     if(currTime + idt >= maxTime){
       fprintf(fout, "%lf\t%lf\n", currTime + idt - maxTime, idt);
@@ -1145,7 +993,6 @@ void ExportGammaLineageData_counter(double k, double theta, long *counter,
 
   idt = gamma_rand(k, theta);
   if(currTime + idt >= maxTime){
-    //fprintf(fout, "%d\n", divCount);
     (*counter) = (*counter) + 1;
   }else{
     ExportGammaLineageData_counter(k, theta, counter, currTime + idt, maxTime); //Sister 1
@@ -1179,10 +1026,8 @@ void ExportGammaTransitionData_WithDeath(double k, double theta, FILE *fout,
 					 double prevIDT)
 {
   double idt;
-  //double acorr = 0.3;
 
   if(genrand_real3()<=pow(2.0, -epsilon)){ //survived
-    //idt = gamma_rand(k, theta);
     idt = NextValueGamma(k, theta, acorr, prevIDT);
     if(currTime + idt >= maxTime){
       fprintf(fout, "%d\n", divCount);
@@ -1202,7 +1047,6 @@ void ExportGammaTransitionData_counter(double k, double theta, long *counter,
 
   idt = NextValueGamma(k, theta, acorr, prevIDT);
   if(currTime + idt >= maxTime){
-    //fprintf(fout, "%d\n", divCount);
     (*counter) = (*counter) + 1;
   }else{
     ExportGammaTransitionData_counter(k, theta, counter, currTime + idt, maxTime, idt); //Sister 1
