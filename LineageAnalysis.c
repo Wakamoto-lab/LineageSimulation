@@ -434,7 +434,7 @@ void EffectOfRemoval(int index)
 {
   int i;
   FILE *fout, *gp;
-  char fname_out[] = "EffectOfDeath_GammaIDT.dat";
+  char fname_out[] = "EffectOfRemoval_GammaIDT.dat";
   double popFit, chronoFit, retroFit;
   double epsilon;
   double noDeathPopFit;
